@@ -1,16 +1,18 @@
 {
   "name": "myhit",
   "version": "1.0.0",
-  "description": "Simple YouTube audio downloader using ytdl-core and Express",
+  "description": "Convert YouTube videos to MP3 format using Node.js and Vercel",
   "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "author": "Your Name",
-  "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1",
-    "node-fetch": "^3.3.2",
-    "ytdl-core": "^4.9.1"
+    "fluent-ffmpeg": "^2.1.2",
+    "ffprobe-static": "^4.3.0",
+    "node-fetch": "^3.0.0",
+    "ytdl-core": "^5.0.0"
+  },
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "engines": {
+    "node": ">=12.0.0"
   }
 }
