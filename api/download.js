@@ -1,6 +1,10 @@
 const ytdl = require('ytdl-core');
 const ffmpeg = require('fluent-ffmpeg');
 const { PassThrough } = require('stream');
+const ffmpegPath = require('ffmpeg-static');
+
+// Set the path to ffmpeg binary
+ffmpeg.setFfmpegPath(ffmpegPath);
 
 module.exports = async (req, res) => {
   const url = req.query.url;
