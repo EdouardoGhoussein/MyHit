@@ -1,9 +1,28 @@
-# api/convert.py
 import os
 import json
 import tempfile
 from pytube import YouTube
 from pydub import AudioSegment
+from pydub.utils import which
+
+def download_ffmpeg():
+    import urllib.request
+    import zipfile
+    
+    url = "https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-essentials.zip"
+    ffmpeg_dir = "/tmp/ffmpeg"
+    if not os.path.exists(ffmpeg_dir):
+        os.makedirs(ffmpeg_dir)
+        zip_path = os.path.join(ffmpeg_dir, "ffmpeg.zip")
+        urllib.request.urlretrieve(url, zip_path)
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(ffmpeg_dir)
+        os.remove(zip_path)
+        os.symlink(os.path.join(ffmpeg_dir, "ffmpeg"), "/usr/local/bin/ffmpeg")
+        os.symlink(os.path.join(ffmpeg_dir, "ffprobe"), "/usr/local/bin/ffprobe")
+
+if which("ffmpeg") is None:
+    download_ffmpeg()
 
 def handler(event, context):
     try:
