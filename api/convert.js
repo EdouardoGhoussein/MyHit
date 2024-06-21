@@ -1,7 +1,7 @@
-// api/convert.js
-
 const ytdl = require('ytdl-core');
-const ffprobe = require('ffprobe-static');
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+const ffprobePath = require('ffprobe-static').path;
+const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
 const path = require('path');
 
@@ -9,23 +9,38 @@ async function convertToMP3(videoUrl) {
     const info = await ytdl.getInfo(videoUrl);
     const format = ytdl.chooseFormat(info.formats, { quality: 'highestaudio' });
 
-    return new Promise((resolve, reject) => {
+    const tmpDir = '/tmp';
+    const videoPath = path.join(tmpDir, 'video.mp4');
+    const audioPath = path.join(tmpDir, 'audio.mp3');
+
+    if (!fs.existsSync(tmpDir)) {
+        fs.mkdirSync(tmpDir);
+    }
+
+    // Download video file
+    await new Promise((resolve, reject) => {
         const video = ytdl(videoUrl, { format });
+        video.pipe(fs.createWriteStream(videoPath));
+        video.on('end', resolve);
+        video.on('error', reject);
+    });
 
-        video.pipe(fs.createWriteStream('/tmp/video.mp4'));
+    // Convert video to mp3
+    return new Promise((resolve, reject) => {
+        ffmpeg.setFfprobePath(ffprobePath);
+        ffmpeg.setFfmpegPath(ffmpegPath);
 
-        video.on('end', () => {
-            const audioPath = path.join('/tmp', 'audio.mp3');
-            const ffmpeg = require('fluent-ffmpeg');
-            ffmpeg.setFfprobePath(ffprobe.path);
-            ffmpeg('/tmp/video.mp4')
-                .toFormat('mp3')
-                .save(audioPath)
-                .on('end', () => resolve(audioPath))
-                .on('error', (err) => reject(err));
-        });
-
-        video.on('error', (err) => reject(err));
+        ffmpeg(videoPath)
+            .toFormat('mp3')
+            .save(audioPath)
+            .on('end', () => {
+                // Clean up: Delete video file after conversion
+                fs.unlinkSync(videoPath);
+                resolve(audioPath);
+            })
+            .on('error', (err) => {
+                reject(err);
+            });
     });
 }
 

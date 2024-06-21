@@ -24,6 +24,7 @@
             const videoUrl = document.getElementById('videoUrl').value.trim();
 
             try {
+                console.assert('test', videoUrl);
                 const response = await fetch('/api/convert', {
                     method: 'POST',
                     headers: {
@@ -31,7 +32,7 @@
                     },
                     body: JSON.stringify({ url: videoUrl }),
                 });
-
+                
                 if (!response.ok) {
                     throw new Error('Failed to convert video to MP3');
                 }

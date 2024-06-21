@@ -4,8 +4,9 @@
   "description": "Convert YouTube videos to MP3 format using Node.js and Vercel",
   "main": "index.js",
   "dependencies": {
-    "fluent-ffmpeg": "^2.1.2",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "ffprobe-static": "^3.1.0",
+    "fluent-ffmpeg": "^2.1.2",
     "node-fetch": "^3.0.0",
     "ytdl-core": "^4.11.5"
   },
