@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "fluent-ffmpeg": "^2.1.2",
-    "ffprobe-static": "^4.3.0",
+    "ffprobe-static": "^3.1.0",
     "node-fetch": "^3.0.0",
     "ytdl-core": "^5.0.0"
   },
