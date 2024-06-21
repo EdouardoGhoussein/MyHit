@@ -1,16 +1,112 @@
-{
-    "name": "my-youtube-downloader",
-    "version": "1.0.0",
-    "description": "Simple YouTube audio downloader using ytdl-core and Express",
-    "main": "index.js",
-    "scripts": {
-      "start": "node index.js"
-    },
-    "author": "Your Name",
-    "license": "MIT",
-    "dependencies": {
-      "express": "^4.17.1",
-      "ytdl-core": "^4.9.1"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Audio Downloader</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
     }
-  }
-  
+    h1 {
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    input[type="text"] {
+      width: calc(100% - 80px);
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .message {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .error {
+      background-color: #f44336;
+      color: white;
+    }
+    .success {
+      background-color: #4CAF50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>YouTube Audio Downloader</h1>
+    <form id="downloadForm">
+      <input type="text" id="youtubeUrl" placeholder="Enter YouTube URL">
+      <button type="submit">Download Audio</button>
+    </form>
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    document.getElementById('downloadForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      
+      const youtubeUrl = document.getElementById('youtubeUrl').value.trim();
+      if (!youtubeUrl) {
+        showMessage('Please enter a YouTube URL.', 'error');
+        return;
+      }
+
+      try {
+        // Construct download URL for audio
+        const downloadUrl = `/download?url=${encodeURIComponent(youtubeUrl)}`;
+        
+        // Initiate file download
+        const response = await fetch(downloadUrl);
+        if (!response.ok) {
+          throw new Error('Failed to download audio.');
+        }
+
+        // Handle file download
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `${getVideoId(youtubeUrl)}.mp3`;
+        document.body.appendChild(a);
+        a.click();
+        showMessage('Audio downloaded successfully!', 'success');
+      } catch (error) {
+        showMessage(error.message || 'Failed to download audio.', 'error');
+      }
+    });
+
+    function getVideoId(url) {
+      const regExp = /^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    function showMessage(message, type) {
+      const messageElem = document.getElementById('message');
+      messageElem.textContent = message;
+      messageElem.className = `message ${type}`;
+    }
+  </script>
+</body>
+</html>
