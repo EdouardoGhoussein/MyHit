@@ -1,7 +1,11 @@
 const express = require('express');
 const ytdl = require('ytdl-core');
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Middleware to serve static files (index.html)
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware to parse JSON bodies
 app.use(express.json());
